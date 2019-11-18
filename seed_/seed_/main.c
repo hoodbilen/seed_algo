@@ -44,10 +44,10 @@ void AddRoundKey(struct secret_Key sk, int round){
     uint32_t D = sk.secretKey[3];
     
         for (int i = 1; i <= 16; i++) {
-            K0[i - 1] = G(sk.secretKey[0] + sk.secretKey[2] - keyConstant[i - 1]); // G함수 추가
+            K0[i - 1] = G(A + C - keyConstant[i - 1]); // G함수 추가
             ak.allkey[2*(i-1)] = K0[i-1];
             
-            K1[i - 1] = G(sk.secretKey[1] - sk.secretKey[3] + keyConstant[i - 1]);
+            K1[i - 1] = G(B - D + keyConstant[i - 1]);
             ak.allkey[2*(i-1)+1] = K1[i-1];
             if (i % 2 == 1) {
                 temp = rol(B,A);
