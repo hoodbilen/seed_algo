@@ -64,6 +64,53 @@ void AddRoundKey(struct secret_Key sk, int round){
         }
 }
 
+void SeedRound(uint32_t *L0, uint32_t *L1, uint32_t *R0, uint32_t *R1, uint32_t *K) {         
+    uint32_t T0, T1; 
+    // F함수 구현 시작
+    T0 = R0 ^ (K)[0];                           
+    T1 = R1 ^ (K)[1];                           
+    T1 ^= T0;                                   
+    T1 = G();      
+    T0 += T1;                                   
+    T0 = G();       
+    T1 += T0;                                   
+    T1 = G();       
+    T0 += T1;                  
+    // F함수 구현 끝                
+    L0 ^= T0; L1 ^= T1;                         
+}
+
+void SEED_Encrypt(uint32_t *plainIn, uint32_t *plainOut, uint32_t *roundKey){
+    uint32_t *L0, *L1, *R0, *R1;
+
+    L0 = plainIn[0];
+    L1 = plainIn[1];
+    R0 = plainIn[2];
+    R1 = plainIn[3];
+
+    SeedRound(L0, L1, R0, R1, roundKey   );
+    SeedRound(R0, R1, L0, L1, roundKey + 2);
+    SeedRound(L0, L1, R0, R1, roundKey + 4);
+    SeedRound(R0, R1, L0, L1, roundKey + 6);
+    SeedRound(L0, L1, R0, R1, roundKey + 8);
+    SeedRound(R0, R1, L0, L1, roundKey + 10);
+    SeedRound(L0, L1, R0, R1, roundKey + 12);
+    SeedRound(R0, R1, L0, L1, roundKey + 14);
+    SeedRound(L0, L1, R0, R1, roundKey + 16);
+    SeedRound(R0, R1, L0, L1, roundKey + 18);
+    SeedRound(L0, L1, R0, R1, roundKey + 20);
+    SeedRound(R0, R1, L0, L1, roundKey + 22);
+    SeedRound(L0, L1, R0, R1, roundKey + 24);
+    SeedRound(R0, R1, L0, L1, roundKey + 26);
+    SeedRound(L0, L1, R0, R1, roundKey + 28);
+    SeedRound(R0, R1, L0, L1, roundKey + 30);
+
+    plainOut[0] = R0;
+    plainOut[1] = R1;
+    plainOut[2] = L0;
+    plainOut[3] = L1;
+}
+
 int main(){
     printf("enter your secretKey : ");
     scanf("%x %x %x %x",&sk.secretKey[0],&sk.secretKey[1]
